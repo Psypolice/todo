@@ -5,14 +5,14 @@ import {Category} from "../../model/Category";
 
 @Component({
   selector: 'app-categories',
-  standalone: true,
-  imports: [CommonModule],
   templateUrl: './categories.component.html',
   styleUrl: './categories.component.css'
 })
 export class CategoriesComponent implements OnInit {
 
   categories: Category[] = [];
+
+  selectedCategory?: Category;
 
   constructor(private dataHandler: DataHandlerService) {
   }
@@ -22,6 +22,7 @@ export class CategoriesComponent implements OnInit {
   }
 
   showTasksByCategory(category: Category) {
+    this.selectedCategory = category;
     this.dataHandler.fillTasksByCategory(category);
   }
 
