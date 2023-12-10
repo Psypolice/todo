@@ -12,7 +12,7 @@
 
       <ng-container matColumnDef="id">
         <th *matHeaderCellDef mat-header-cell>#</th>
-        <td *matCellDef="let index = index" mat-cell>
+        <td *matCellDef="let index = index" class="col-id" mat-cell>
           {{index + 1}}
         </td>
       </ng-container>
@@ -29,7 +29,7 @@
         <th *matHeaderCellDef mat-header-cell mat-sort-header>Срок</th>
         <td class="col-color" *matCellDef="let task"
             [ngClass]="{'completed': task.completed, 'novalue': task.date == null}" mat-cell>
-          {{task.date ? (task.date | date : "short") : "Без даты"}}
+          {{task.date | taskDate}}
         </td>
       </ng-container>
 

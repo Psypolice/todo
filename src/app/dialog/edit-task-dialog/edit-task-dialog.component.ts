@@ -29,6 +29,7 @@ export class EditTaskDialogComponent implements OnInit{
   tmpTitle: string = '';
   tmpCategory!: Category;
   tmpPriority!: Priority;
+  tmpDate!: Date | null;
 
     ngOnInit(): void {
         this.task = this.data[0];
@@ -37,6 +38,7 @@ export class EditTaskDialogComponent implements OnInit{
         this.tmpTitle = this.task.title;
         this.tmpCategory = this.task.category as Category;
         this.tmpPriority = this.task.priority as Priority;
+        this.tmpDate = this.task.date as Date;
 
         this.dataHandler.getAllCategory().subscribe(items => this.categories = items);
         this.dataHandler.getAllPriority().subscribe(items => this.priority = items);
@@ -46,6 +48,7 @@ export class EditTaskDialogComponent implements OnInit{
     this.task.title = this.tmpTitle;
     this.task.category = this.tmpCategory;
     this.task.priority = this.tmpPriority;
+    this.task.date = this.tmpDate;
     this.dialogRef.close(this.task);
   }
 
@@ -58,7 +61,7 @@ export class EditTaskDialogComponent implements OnInit{
       maxWidth: '500px',
       data: {
         dialogTitle: 'Подтвердите действие',
-        message: 'Вы уверены, что хотите удвлить задачу: ' + `${this.task.title}?`
+        message: `Вы уверены, что хотите удалить задачу: "${this.task.title}"?`
       },
       autoFocus: false
     });
