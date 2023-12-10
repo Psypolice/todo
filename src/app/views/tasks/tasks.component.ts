@@ -1,9 +1,11 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {Task} from "../../model/Task";
 import {DataHandlerService} from "../../service/data-handler.service";
 import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
+import {MatDialog} from "@angular/material/dialog";
+import {EditTaskDialogComponent} from "../../dialog/edit-task-dialog/edit-task-dialog.component";
 
 @Component({
   selector: 'app-tasks',
@@ -13,23 +15,37 @@ import {MatSort} from "@angular/material/sort";
 export class TasksComponent implements OnInit, AfterViewInit {
 
   displayedColumns: string[] = ['color', 'id', 'title', 'date', 'priority', 'category'];
-  dataSource!: MatTableDataSource<Task>;
+  dataSource! : MatTableDataSource<Task>;
 
-  @ViewChild(MatPaginator, {static: false}) private paginator!: MatPaginator;
-  @ViewChild(MatSort, {static: false}) private sort!: MatSort;
+  @ViewChild(MatPaginator, {static: false}) paginator = {} as MatPaginator;
+  @ViewChild(MatSort, {static: false}) sort = {} as MatSort;
+
   tasks: Task[] = [];
 
-  constructor(private dataHandler: DataHandlerService) {
+  @Input('tasks')
+  set setTasks(tasks: Task[]) {
+    this.tasks = tasks;
+    this.fillTable();
   }
 
-  ngOnInit(): void {
-    this.dataHandler.tasksSubject.subscribe(tasks => this.tasks = tasks);
-    this.dataSource = new MatTableDataSource<Task>();
-    this.refreshTable();
+  @Output()
+  updateTask = new EventEmitter<Task>();
+
+  @Output()
+  deleteTask = new EventEmitter<Task>();
+
+  constructor(private dataHandler: DataHandlerService,
+              private dialog: MatDialog) {
   }
 
   ngAfterViewInit(): void {
-    this.addTableObjects();
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+
+  ngOnInit(): void {
+    this.dataSource = new MatTableDataSource();
+    this.fillTable();
   }
 
   toggleTaskCompleted(task: Task): void {
@@ -46,10 +62,13 @@ export class TasksComponent implements OnInit, AfterViewInit {
     return "#fff";
   }
 
-  private refreshTable(): void {
-    this.dataSource.data = this.tasks;
+  fillTable(): void {
 
-    this.addTableObjects();
+    if (!this.dataSource) {
+      return;
+    }
+
+    this.dataSource.data = this.tasks;
 
     // @ts-ignore
     this.dataSource.sortingDataAccessor = (task, colName) => {
@@ -71,8 +90,38 @@ export class TasksComponent implements OnInit, AfterViewInit {
   }
 
   private addTableObjects(): void {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+
   }
 
+  openEditTaskDialog(task: Task): void {
+    const dialogRef = this.dialog.open(EditTaskDialogComponent, {
+      data: [task, 'Редактирование задачи'],
+      autoFocus: false
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+
+      if (result === 'delete') {
+        this.deleteTask.emit(task);
+        return;
+      }
+
+      if (result === 'done') {
+        task.completed = true;
+        this.updateTask.emit(task);
+        return;
+      }
+
+      if (result === 'activate') {
+        task.completed = false;
+        this.updateTask.emit(task);
+        return;
+      }
+
+      if (result as Task) {
+        this.updateTask.emit(task);
+        return;
+      }
+    });
+  }
 }
