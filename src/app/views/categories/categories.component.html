@@ -11,11 +11,21 @@
   </div>
   <div class="sidebar-wrapper">
     <ul class="nav">
+      <li (click)="showTasksByCategory(null!)"
+          class="nav-item category"
+          [class.active]="selectedCategory === null">
+        <a class="nav-link pointer">
+          <span class="all-category-title">Все</span>
+        </a>
+      </li>
+
+      <div class="line"></div>
+
       <li (click)="showTasksByCategory(category)"
-          *ngFor="let category of categories" class="nav-item pointer"
+          *ngFor="let category of categories" class="nav-item category"
           [class.active]="category === selectedCategory">
-        <a class="nav-link">
-          <p>{{category.title}}</p>
+        <a class="nav-link pointer">
+          <p>{{ category.title }}</p>
         </a>
       </li>
     </ul>
