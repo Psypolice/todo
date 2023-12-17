@@ -2,7 +2,7 @@
   <div class="card-header card-header-warning">
     <h4 class="card-title">Список задач</h4>
   </div>
-  <div *ngIf="tasks && tasks.length > 0"class="card-body table-responsive" >
+  <div *ngIf="tasks && tasks.length > 0" class="card-body table-responsive">
 
     <table [dataSource]="dataSource" mat-table matSort>
       <ng-container matColumnDef="color">
@@ -11,9 +11,9 @@
       </ng-container>
 
       <ng-container matColumnDef="id">
-        <th *matHeaderCellDef mat-header-cell>#</th>
+        <th *matHeaderCellDef mat-header-cell></th>
         <td *matCellDef="let index = index" class="col-id" mat-cell>
-          {{index + 1}}
+          {{ index + 1 }}
         </td>
       </ng-container>
 
@@ -21,31 +21,57 @@
         <th *matHeaderCellDef mat-header-cell mat-sort-header>Название</th>
         <td *matCellDef="let task" [class.completed]="task.completed" mat-cell class="col-title pointer"
             (click)="openEditTaskDialog(task)">
-          {{task.title}}
+          {{ task.title }}
         </td>
       </ng-container>
 
       <ng-container matColumnDef="date">
-        <th *matHeaderCellDef mat-header-cell mat-sort-header>Срок</th>
-        <td class="col-color" *matCellDef="let task"
+        <th *matHeaderCellDef mat-header-cell mat-sort-header >Срок</th>
+        <td class="col-date" *matCellDef="let task"
             [ngClass]="{'completed': task.completed, 'novalue': task.date == null}" mat-cell>
-          {{task.date | taskDate}}
+          {{ task.date | taskDate }}
         </td>
       </ng-container>
 
       <ng-container matColumnDef="priority">
         <th *matHeaderCellDef mat-header-cell mat-sort-header>Приоритет</th>
-        <td class="col-id" *matCellDef="let task"
+        <td class="col-id" *matCellDef="let task" class="col-priority"
             [ngClass]="{'completed': task.completed, 'novalue': task.priority == null}" mat-cell>
-          {{task.priority ? task.priority.title : "Без приоритета"}}
+          {{ task.priority ? task.priority.title : "Без приоритета" }}
         </td>
       </ng-container>
 
       <ng-container matColumnDef="category">
         <th *matHeaderCellDef mat-header-cell mat-sort-header>Категория</th>
         <td class="col-category" *matCellDef="let task"
-            [ngClass]="{'completed': task.completed, 'novalue': task.category == null, 'link': !task.completed && task.category}" mat-cell>
-          {{task.category ? task.category.title : "Без категории"}}
+            [ngClass]="{'completed': task.completed, 'novalue': task.category == null, 'link': !task.completed && task.category}"
+            (click)="!task.completed && task.category && onSelectCategory(task.category)"
+            mat-cell>
+
+          {{ task.category ? task.category.title : "Без категории" }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="operations">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td class="col-operations" mat-cell *matCellDef="let task" [class.complete]="task.completed">
+          <button mat-icon-button (click)="openDeleteDialog(task)" class="delete-icon">
+            <mat-icon aria-hidden="false">delete</mat-icon>
+          </button>
+          <button mat-icon-button (click)="openEditTaskDialog(task)" class="edit-icon">
+            <mat-icon aria-hidden="false">edit</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td class="col-select" mat-cell *matCellDef="let task">
+          <mat-checkbox
+            (click)="$event.stopPropagation()"
+            (change)="$event ? onToggleStatus(task) : null"
+            [checked]="task.completed">
+          </mat-checkbox>
         </td>
       </ng-container>
 

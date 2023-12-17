@@ -17,7 +17,7 @@
 }
 
 .col-priority {
-  width: 10%;
+  width: 8%;
 }
 
 .col-category {
@@ -30,7 +30,8 @@
 }
 
 .col-operations {
-  width: 8%;
+  width: 11%;
+  padding-right: 0px;
 }
 
 .col-color {
@@ -38,5 +39,27 @@
 }
 
 .col-date {
-  width: 10% !important;
+  width: 11% !important;
+}
+
+.delete-icon {
+  cursor: pointer;
+  color: #ea6561;
+  font-size: 18px;
+  margin-left: 3px;
+  margin-right: 3px;
+}
+
+.edit-icon {
+  cursor: pointer;
+  color: #9A9A9A;
+  font-size: 18px;
+  margin-right: 3px;
+
+}
+
+.mat-mdc-header-cell {
+  font-size: 1.063rem;
+  color: #9c27b0 !important;
+  font-weight: normal;
 }

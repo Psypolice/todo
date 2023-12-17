@@ -31,6 +31,9 @@ export class DataHandlerService {
   getAllPriority(): Observable<Priority[]> {
     return this.priorityDaoArray.getAll();
   }
+  updateTask(task: Task): Observable<Task> {
+    return this.taskDaoArray.update(task);
+  }
 
   searchTasks(category: Category, searchText: string, status: boolean, priority: Priority): Observable<Task[]> {
     return this.taskDaoArray.search(category, searchText, status, priority);

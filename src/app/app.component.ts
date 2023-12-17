@@ -13,7 +13,7 @@ export class AppComponent implements OnInit{
   tasks: Task[] = [];
   categories: Category[] = [];
 
-  private selectedCategory!: Category;
+  protected selectedCategory!: Category;
 
   constructor(private dataHandler: DataHandlerService) {
   }
@@ -36,7 +36,16 @@ export class AppComponent implements OnInit{
   }
 
   onUpdateTask(task: Task) {
-    console.log(task);
+    this.dataHandler.updateTask(task).subscribe(() => {
+      this.dataHandler.searchTasks(
+        this.selectedCategory,
+        null!,
+        null!,
+        null!
+      ).subscribe(tasks => {
+        this.tasks = tasks;
+      });
+    });
   }
 
   onDeleteTask(task: Task) {
