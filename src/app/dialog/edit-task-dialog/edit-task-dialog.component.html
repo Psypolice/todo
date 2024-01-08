@@ -61,8 +61,8 @@
     <button mat-raised-button (click)="onCancel()">Отмена</button>
   </div>
   <div class="col-md-7 col-12 text-right">
-    <button mat-button style="color: green" (click)="onActivate()" *ngIf="task.completed">Активировать</button>
-    <button mat-button style="color: green" (click)="onDone()" *ngIf="!task.completed">Завершить</button>
-    <button mat-button class="red" (click)="onDelete()">Удалить задачу</button>
+    <button mat-button style="color: green" (click)="onActivate()" *ngIf="task.completed && canActivateDesactivate()">Активировать</button>
+    <button mat-button style="color: green" (click)="onDone()" *ngIf="!task.completed && canActivateDesactivate()">Завершить</button>
+    <button mat-button class="red" (click)="onDelete()" *ngIf="canDelete()">Удалить задачу</button>
   </div>
 </mat-dialog-actions>

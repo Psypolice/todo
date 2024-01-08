@@ -32,14 +32,7 @@ export class AppComponent implements OnInit{
 
   onSelectCategory(category: Category) {
     this.selectedCategory = category;
-    this.dataHandler.searchTasks(
-      this.selectedCategory,
-      null!,
-      null!,
-      null!
-    ).subscribe(tasks => {
-      this.tasks = tasks;
-    });
+    this.updateTasks();
   }
 
   onUpdateTask(task: Task) {
@@ -105,5 +98,20 @@ export class AppComponent implements OnInit{
     ).subscribe((tasks: Task[]) => {
       this.tasks = tasks;
     });
+  }
+
+  protected onAddTask(task: Task) {
+    this.dataHandler.addTask(task).subscribe(result => {
+      this.updateTasks();
+    });
+  }
+
+  onAddCategory(title: string): void {
+    this.dataHandler.addCategory(title).subscribe(() => this.updateCategories());
+
+  }
+
+  private updateCategories() {
+      this.dataHandler.getAllCategory().subscribe(categories => this.categories = categories);
   }
 }

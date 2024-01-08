@@ -41,6 +41,9 @@ export class TasksComponent implements OnInit, AfterViewInit {
   @Output()
   filterByPriority = new EventEmitter<Priority>();
 
+  @Output()
+  addTask = new EventEmitter<Task>();
+
   searchTaskText: string = '';
   selectedStatusFilter!: boolean;
   selectedPriorityFilter!: Priority;
@@ -192,5 +195,16 @@ export class TasksComponent implements OnInit, AfterViewInit {
       this.selectedPriorityFilter = value;
       this.filterByPriority.emit(this.selectedPriorityFilter);
     }
+  }
+
+  protected openAddTaskDialog() {
+    const task = new Task(null!, '', false,  null!, this.selectedCategory);
+    const dialogRef = this.dialog.open(EditTaskDialogComponent, {data: [task, 'Добавление задачи']});
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.addTask.emit(task);
+      }
+    })
+
   }
 }

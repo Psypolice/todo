@@ -6,9 +6,12 @@ import { Task } from "../../../model/Task";
 import {TestData} from "../../TestData";
 
 export class TaskDAOArray implements TaskDAO {
-  add(t: Task): Observable<Task> {
-    // @ts-ignore
-    return undefined;
+  add(task: Task): Observable<Task> {
+    if (task.id === null) {
+      task.id = this.getLastIdTask();
+    }
+    TestData.tasks.push(task);
+    return of(task);
   }
 
   delete(id: number): Observable<Task> {
@@ -80,4 +83,7 @@ export class TaskDAOArray implements TaskDAO {
     return of(task);
   }
 
+  private getLastIdTask(): number {
+    return Math.max.apply(Math, TestData.tasks.map(t => t.id)) + 1;
+  }
 }
