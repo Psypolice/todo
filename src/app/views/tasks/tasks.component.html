@@ -10,7 +10,7 @@
       <button
         *ngIf="filterInput.value.trim().length > 0"
         class="clear-icon size25 gray"
-        matSuffix mat-icon-button aria-label="Clear"
+        mat-icon-button matSuffix aria-label="Clear"
         (click)="searchTaskText = ''; onFilterByTitle()">
         <mat-icon>clear</mat-icon>
       </button>
@@ -30,10 +30,9 @@
 
       <button
         *ngIf="selectedStatusFilter != null"
-        (click)="$event.stopPropagation(); onFilterByStatus(null!)"
-        aria-label="Clear"
         class="clear-icon size25 gray"
-        mat-icon-button matSuffix>
+        mat-icon-button matSuffix aria-label="Clear"
+        (click)="$event.stopPropagation(); onFilterByStatus(null!)">
         <mat-icon>clear</mat-icon>
       </button>
     </mat-form-field>
@@ -44,14 +43,13 @@
       <mat-label>Фильтр по приоритетам</mat-label>
       <mat-select [value]="selectedPriorityFilter" (valueChange)="onFilterByPriority($event)">
         <mat-option [value]="null">Все приоритеты</mat-option>
-        <mat-option *ngFor="let priority of priorities" [value]="priority">{{priority.title}}</mat-option>
+        <mat-option *ngFor="let priority of priorities" [value]="priority">{{ priority.title }}</mat-option>
       </mat-select>
 
       <button
         *ngIf="selectedPriorityFilter != null"
         class="clear-icon size25 gray"
-        matSuffix mat-icon-button
-        aria-label="Clear"
+        mat-icon-button matSuffix aria-label="Clear"
         (click)="$event.stopPropagation(); onFilterByPriority(null!); ">
         <mat-icon>clear</mat-icon>
       </button>
@@ -66,7 +64,7 @@
           (searchTaskText != null && searchTaskText.trim() != '')"
           (click)="$event.stopPropagation(); onFilterByStatus(null!); onFilterByPriority(null!);
           searchTaskText = ''; onFilterByTitle()"
-          aria-label="Clear" mat-button matSuffix>
+          mat-button matSuffix aria-label="Clear">
           Сбросить фильтры
         </button>
       </div>
