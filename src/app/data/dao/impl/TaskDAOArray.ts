@@ -47,14 +47,27 @@ export class TaskDAOArray implements TaskDAO {
   }
 
   search(category: Category, searchText: String, status: boolean, priority: Priority): Observable<Task[]> {
-    return of(this.searchTodos(category, searchText, status, priority));
+    return of(this.searchTasks(category, searchText, status, priority));
   }
 
-  private searchTodos(category: Category, searchText: String, status: boolean, priority: Priority): Task[] {
+
+
+  private searchTasks(category: Category, searchText: String, status: boolean, priority: Priority): Task[] {
     let allTasks = TestData.tasks;
 
+    if (status != null) {
+      allTasks = allTasks.filter((task => task.completed === status))
+    }
     if (category != null) {
-      allTasks = allTasks.filter((todo => todo.category === category))
+      allTasks = allTasks.filter((task => task.category === category))
+    }
+    if (priority != null) {
+      allTasks = allTasks.filter((task => task.priority === priority))
+    }
+    if (searchText != null) {
+      allTasks = allTasks.filter(
+        task => task.title.toLowerCase().includes(searchText.toLowerCase())
+      );
     }
 
     return allTasks;

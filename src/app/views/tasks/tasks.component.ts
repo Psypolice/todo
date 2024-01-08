@@ -8,6 +8,7 @@ import {MatDialog} from "@angular/material/dialog";
 import {EditTaskDialogComponent} from "../../dialog/edit-task-dialog/edit-task-dialog.component";
 import {ConfirmDialogComponent} from "../../dialog/confirm-dialog/confirm-dialog.component";
 import {Category} from "../../model/Category";
+import {Priority} from "../../model/Priority";
 
 @Component({
   selector: 'app-tasks',
@@ -22,14 +23,6 @@ export class TasksComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator, {static: false}) paginator = {} as MatPaginator;
   @ViewChild(MatSort, {static: false}) sort = {} as MatSort;
 
-  tasks: Task[] = [];
-
-  @Input('tasks')
-  set setTasks(tasks: Task[]) {
-    this.tasks = tasks;
-    this.fillTable();
-  }
-
   @Output()
   updateTask = new EventEmitter<Task>();
 
@@ -38,6 +31,35 @@ export class TasksComponent implements OnInit, AfterViewInit {
 
   @Output()
   selectCategory = new EventEmitter<Category>();
+
+  @Output()
+  filterByTitle = new EventEmitter<string>();
+
+  @Output()
+  filterByStatus = new EventEmitter<boolean>();
+
+  @Output()
+  filterByPriority = new EventEmitter<Priority>();
+
+  searchTaskText: string = '';
+  selectedStatusFilter!: boolean;
+  selectedPriorityFilter!: Priority;
+  tasks: Task[] = [];
+  priorities: Priority[] = [];
+
+  @Input()
+  selectedCategory!: Category;
+
+  @Input('priorities')
+  set setPriorities(priorities: Priority[]) {
+    this.priorities = priorities;
+  }
+
+  @Input('tasks')
+  set setTasks(tasks: Task[]) {
+    this.tasks = tasks;
+    this.fillTable();
+  }
 
   constructor(private dataHandler: DataHandlerService,
               private dialog: MatDialog) {
@@ -152,5 +174,23 @@ export class TasksComponent implements OnInit, AfterViewInit {
 
   protected onSelectCategory(category: Category) {
     this.selectCategory.emit(category);
+  }
+
+  protected onFilterByTitle(): void {
+    this.filterByTitle.emit(this.searchTaskText);
+  }
+
+  protected onFilterByStatus(value: boolean): void {
+    if (value !== this.selectedStatusFilter) {
+      this.selectedStatusFilter = value;
+      this.filterByStatus.emit(this.selectedStatusFilter);
+    }
+  }
+
+  protected onFilterByPriority(value: Priority): void {
+    if (value !== this.selectedPriorityFilter) {
+      this.selectedPriorityFilter = value;
+      this.filterByPriority.emit(this.selectedPriorityFilter);
+    }
   }
 }
