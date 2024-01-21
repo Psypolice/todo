@@ -75,7 +75,7 @@ export class TasksComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.dataSource = new MatTableDataSource();
-    this.fillTable();
+    this.onSelectCategory(null!);
   }
 
   toggleTaskCompleted(task: Task): void {

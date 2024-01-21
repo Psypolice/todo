@@ -24,6 +24,9 @@ import {registerLocaleData} from "@angular/common";
 import localeRu from "@angular/common/locales/ru";
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import {EditCategoryDialogComponent} from "./dialog/edit-category-dialog/edit-category-dialog.component";
+import {FooterComponent} from "./views/footer/footer.component";
+import {HeaderComponent} from "./views/header/header.component";
+import {StatsComponent} from "./views/stats/stats.component";
 
 registerLocaleData(localeRu);
 @NgModule({
@@ -52,7 +55,10 @@ registerLocaleData(localeRu);
     MatSelectModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    FooterComponent,
+    HeaderComponent,
+    StatsComponent
   ],
   providers: [
     {provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: {hasBackdrop: true}},

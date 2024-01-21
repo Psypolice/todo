@@ -27,12 +27,15 @@ export class CategoriesComponent implements OnInit {
   @Output()
   addCategory = new EventEmitter<string>();
 
+  @Output()
+  searchCategory = new EventEmitter<string>();
 
   @Input()
   selectedCategory?: Category;
 
   protected indexMouseMove: number = 0;
   protected showEditIconCategory: boolean = false;
+  protected searchCategoryTitle: string = '';
 
   constructor(private dataHandler: DataHandlerService,
               private dialog: MatDialog) {
@@ -91,4 +94,10 @@ export class CategoriesComponent implements OnInit {
     })
   }
 
+  search() {
+    if (this.searchCategoryTitle === null) {
+      return;
+    }
+    this.searchCategory.emit(this.searchCategoryTitle);
+  }
 }
