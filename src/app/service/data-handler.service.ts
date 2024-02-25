@@ -13,7 +13,7 @@ import {PriorityDAOArray} from "../data/dao/impl/PriorityDAOArray";
 })
 export class DataHandlerService {
 
-  private taskDaoArray = new TaskDAOArray();
+  private   taskDaoArray = new TaskDAOArray();
   private categoryDaoArray = new CategoryDAOArray();
   private priorityDaoArray = new PriorityDAOArray();
 
@@ -61,5 +61,21 @@ export class DataHandlerService {
 
   searchCategories(title: string): Observable<Category[]> {
     return this.categoryDaoArray.search(title);
+  }
+
+  getCompletedTaskCountInCategory(category: Category): Observable<number> {
+    return this.taskDaoArray.getCompletedCountInCategory(category);
+  }
+
+  getTotalTaskCountInCategory(category: Category): Observable<number> {
+    return this.taskDaoArray.getTotalCountInCategory(category);
+  }
+
+  getUncompletedTaskCountInCategory(category: Category): Observable<number> {
+    return this.taskDaoArray.getUncompletedCountInCategory(category);
+  }
+
+  getUncompletedTotalTaskCount(): Observable<number> {
+    return this.taskDaoArray.getUncompletedCountInCategory(null!);
   }
 }

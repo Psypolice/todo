@@ -3,6 +3,7 @@ import {Task} from "./model/Task";
 import {DataHandlerService} from "./service/data-handler.service";
 import {Category} from "./model/Category";
 import {Priority} from "./model/Priority";
+import {zip} from "rxjs";
 
 @Component({
   selector: 'app-root',
@@ -14,6 +15,13 @@ export class AppComponent implements OnInit{
   tasks: Task[] = [];
   categories: Category[] = [];
   priorities: Priority[] = [];
+
+  protected totalTasksCountInCategory: number = 0;
+  protected completedTaskCountInCategory: number = 0;
+  protected uncompletedTaskCountInCategory: number = 0;
+  protected uncompletedTotalTaskCount: number = 0;
+
+
 
   protected selectedCategory!: Category;
   private searchTaskText: string = '';
@@ -33,32 +41,18 @@ export class AppComponent implements OnInit{
 
   onSelectCategory(category: Category) {
     this.selectedCategory = category;
-    this.updateTasks();
+    this.updateTaskAndStats();
   }
 
   onUpdateTask(task: Task) {
     this.dataHandler.updateTask(task).subscribe(() => {
-      this.dataHandler.searchTasks(
-        this.selectedCategory,
-        null!,
-        null!,
-        null!
-      ).subscribe(tasks => {
-        this.tasks = tasks;
-      });
+      this.updateTaskAndStats();
     });
   }
 
   onDeleteTask(task: Task) {
-    this.dataHandler.deleteTask(task.id).subscribe(() => {
-      this.dataHandler.searchTasks(
-        this.selectedCategory,
-        null!,
-        null!,
-        null!,
-      ).subscribe(tasks => {
-        this.tasks = tasks;
-      });
+    this.dataHandler.deleteTask(task.id).subscribe(cat => {
+      this.updateTaskAndStats();
     });
   }
 
@@ -103,7 +97,7 @@ export class AppComponent implements OnInit{
 
   protected onAddTask(task: Task) {
     this.dataHandler.addTask(task).subscribe(result => {
-      this.updateTasks();
+      this.updateTaskAndStats();
     });
   }
 
@@ -122,5 +116,25 @@ export class AppComponent implements OnInit{
     this.dataHandler.searchCategories(title).subscribe(categories => {
       this.categories = categories;
     });
+  }
+
+  protected updateTaskAndStats(): void {
+    this.updateTasks();
+
+    this.updateStats();
+  }
+
+  protected updateStats(): void {
+    zip(
+      this.dataHandler.getTotalTaskCountInCategory(this.selectedCategory),
+      this.dataHandler.getCompletedTaskCountInCategory(this.selectedCategory),
+      this.dataHandler.getUncompletedTaskCountInCategory(this.selectedCategory),
+      this.dataHandler.getUncompletedTotalTaskCount()
+    ).subscribe( array => {
+      this.totalTasksCountInCategory = array[0];
+      this.completedTaskCountInCategory = array[1];
+      this.uncompletedTaskCountInCategory = array[2];
+      this.uncompletedTotalTaskCount = array[3];
+    })
   }
 }

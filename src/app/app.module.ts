@@ -27,6 +27,8 @@ import {EditCategoryDialogComponent} from "./dialog/edit-category-dialog/edit-ca
 import {FooterComponent} from "./views/footer/footer.component";
 import {HeaderComponent} from "./views/header/header.component";
 import {StatsComponent} from "./views/stats/stats.component";
+import {AboutDialogComponent} from "./dialog/about-dialog/about-dialog.component";
+import {StatCardComponent} from "./views/stats/stat-card/stat-card.component";
 
 registerLocaleData(localeRu);
 @NgModule({
@@ -37,7 +39,10 @@ registerLocaleData(localeRu);
     EditTaskDialogComponent,
     EditCategoryDialogComponent,
     ConfirmDialogComponent,
-    TaskDatePipe
+    TaskDatePipe,
+    AboutDialogComponent,
+    StatCardComponent,
+    StatsComponent
   ],
   imports: [
     BrowserModule,
@@ -58,11 +63,13 @@ registerLocaleData(localeRu);
     MatCheckboxModule,
     FooterComponent,
     HeaderComponent,
-    StatsComponent
   ],
   providers: [
     {provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: {hasBackdrop: true}},
     {provide: MAT_DATE_LOCALE, useValue: 'ru-RU'}
+  ],
+  exports: [
+    StatCardComponent
   ],
 
   bootstrap: [AppComponent]
