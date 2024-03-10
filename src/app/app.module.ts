@@ -42,7 +42,8 @@ registerLocaleData(localeRu);
     TaskDatePipe,
     AboutDialogComponent,
     StatCardComponent,
-    StatsComponent
+    StatsComponent,
+    HeaderComponent
   ],
   imports: [
     BrowserModule,
@@ -62,7 +63,6 @@ registerLocaleData(localeRu);
     MatNativeDateModule,
     MatCheckboxModule,
     FooterComponent,
-    HeaderComponent,
   ],
   providers: [
     {provide: MAT_DIALOG_DEFAULT_OPTIONS, useValue: {hasBackdrop: true}},
