@@ -33,9 +33,17 @@ export class CategoriesComponent implements OnInit {
   @Input()
   selectedCategory?: Category;
 
+  @Input('categoryMap')
+  set setCategoryMap(categoryMap: Map<Category, number>) {
+    this.selectedCategoryMap = categoryMap;
+  }
+
+  @Input()
+  uncompletedTotal: number = 0;
+
   protected indexMouseMove: number = 0;
-  protected showEditIconCategory: boolean = false;
   protected searchCategoryTitle: string = '';
+  protected selectedCategoryMap: Map<Category, number> = new Map<Category, number>();
 
   constructor(private dataHandler: DataHandlerService,
               private dialog: MatDialog) {
@@ -91,7 +99,7 @@ export class CategoriesComponent implements OnInit {
       if (result) {
         this.addCategory.emit(result as string);
       }
-    })
+    });
   }
 
   search() {

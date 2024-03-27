@@ -3,14 +3,18 @@ import {Task} from "./model/Task";
 import {DataHandlerService} from "./service/data-handler.service";
 import {Category} from "./model/Category";
 import {Priority} from "./model/Priority";
-import {zip} from "rxjs";
+import {concatMap, map, zip} from "rxjs";
+import {IntroService} from "./service/intro.service";
 
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   styles: []
 })
-export class AppComponent implements OnInit{
+export class AppComponent implements OnInit {
+
+  protected categoryMap = new Map<Category, number>();
+
   title = 'Todo';
   tasks: Task[] = [];
   categories: Category[] = [];
@@ -30,14 +34,19 @@ export class AppComponent implements OnInit{
   private statusFilter!: boolean;
   private searchCategoryText: string = '';
 
-  constructor(private dataHandler: DataHandlerService) {
+  constructor(private dataHandler: DataHandlerService,
+              private introService: IntroService) {
   }
 
   ngOnInit(): void {
-        this.dataHandler.getAllTask().subscribe(tasks => this.tasks = tasks);
-        this.dataHandler.getAllPriority().subscribe(priority => this.priorities = priority);
-        this.dataHandler.getAllCategory().subscribe(categories => this.categories = categories)
-    }
+    this.dataHandler.getAllCategory().subscribe(category => this.categories = category);
+    this.dataHandler.getAllPriority().subscribe(priority => this.priorities = priority);
+    this.fillCategories();
+
+    this.onSelectCategory(null!);
+
+    this.introService.startIntroJS(true);
+  }
 
   onSelectCategory(category: Category) {
     this.selectedCategory = category;
@@ -46,25 +55,37 @@ export class AppComponent implements OnInit{
 
   onUpdateTask(task: Task) {
     this.dataHandler.updateTask(task).subscribe(() => {
+      this.fillCategories();
       this.updateTaskAndStats();
     });
   }
 
   onDeleteTask(task: Task) {
-    this.dataHandler.deleteTask(task.id).subscribe(cat => {
+    this.dataHandler.deleteTask(task.id).pipe(
+      concatMap(task => {
+        return this.dataHandler.getUncompletedTaskCountInCategory(task.category!).pipe(map(count => {
+          return ({t: task, count});
+        }));
+      })
+    ).subscribe(result => {
+      const t = result.t as Task;
+      this.categoryMap.set(t.category!, result.count);
+
       this.updateTaskAndStats();
-    });
+    })
   }
 
   protected onDeleteCategory(category: Category) {
-    this.dataHandler.deleteCategory(category.id).subscribe( () => {
+    this.dataHandler.deleteCategory(category.id).subscribe(cat => {
       this.selectedCategory = null!;
+      this.categoryMap.delete(cat)
       this.onSearchCategory(this.searchCategoryText);
+      this.updateTaskAndStats()
     });
   }
 
   protected onUpdateCategory(category: Category) {
-    this.dataHandler.updateCategory(category).subscribe( () => {
+    this.dataHandler.updateCategory(category).subscribe(() => {
       this.onSearchCategory(this.searchCategoryText);
     });
   }
@@ -96,25 +117,47 @@ export class AppComponent implements OnInit{
   }
 
   protected onAddTask(task: Task) {
-    this.dataHandler.addTask(task).subscribe(result => {
+    this.dataHandler.addTask(task).pipe(
+      concatMap(task => {
+        return this.dataHandler.getUncompletedTaskCountInCategory(task.category!).pipe(map(count => {
+          return({t: task, count});
+        }))
+      })
+    ).subscribe(result => {
+      const t = result.t as Task;
+      if (t.category) {
+        this.categoryMap.set(t.category, result.count);
+      }
       this.updateTaskAndStats();
     });
   }
 
   onAddCategory(title: string): void {
-    this.dataHandler.addCategory(title).subscribe(() => this.updateCategories());
+    this.dataHandler.addCategory(title).subscribe(() => this.fillCategories());
 
   }
 
-  private updateCategories() {
-      this.dataHandler.getAllCategory().subscribe(categories => this.categories = categories);
+  protected fillCategories(): void {
+    if (this.categoryMap) {
+      this.categoryMap.clear();
+    }
+
+    this.categories = this.categories.sort((a, b) =>
+      a.title.localeCompare(b.title));
+
+    this.categories.forEach(cat => {
+      this.dataHandler.getUncompletedTaskCountInCategory(cat)
+        .subscribe(count => this.categoryMap.set(cat, count));
+    });
+
   }
 
-  protected onSearchCategory(title: string):void {
+  protected onSearchCategory(title: string): void {
     this.searchCategoryText = title;
 
     this.dataHandler.searchCategories(title).subscribe(categories => {
       this.categories = categories;
+      this.fillCategories();
     });
   }
 
@@ -130,7 +173,7 @@ export class AppComponent implements OnInit{
       this.dataHandler.getCompletedTaskCountInCategory(this.selectedCategory),
       this.dataHandler.getUncompletedTaskCountInCategory(this.selectedCategory),
       this.dataHandler.getUncompletedTotalTaskCount()
-    ).subscribe( array => {
+    ).subscribe(array => {
       this.totalTasksCountInCategory = array[0];
       this.completedTaskCountInCategory = array[1];
       this.uncompletedTaskCountInCategory = array[2];
